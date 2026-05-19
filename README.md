@@ -19,6 +19,9 @@
 
 ### 1. 問題の取得
 ```bash
+# ABCディレクトリへ移動
+cd ABC
+
 # 例: ABC350 の全問題をダウンロード
 acc new abc350
 cd abc350/a

@@ -1,0 +1,214 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+/**
+ * @brief 競技プログラミング用テンプレート (最強チートシート版)
+ * 
+ * 頻出の型、マクロ、関数、入出力高速化、デバッグ用ツールを網羅。
+ * C++20 推奨。
+ */
+
+// --- 型エイリアス ---
+using ll = long long;
+using ull = unsigned long long;
+using ld = long double;
+using vi = vector<int>;
+using vl = vector<ll>;
+using vvi = vector<vi>;
+using vvl = vector<vl>;
+using pii = pair<int, int>;
+using pll = pair<ll, ll>;
+using vpii = vector<pii>;
+using vpll = vector<pll>;
+
+// --- 定数 ---
+const ll INF = 1e18;
+const int INF_INT = 1e9;
+const int MOD = 998244353; // AtCoderで主流のMOD
+const int MOD_OLD = 1e9 + 7;
+const double PI = acos(-1);
+const int dx[] = {0, 1, 0, -1, 1, 1, -1, -1}; // 4方向 + 斜め
+const int dy[] = {1, 0, -1, 0, 1, -1, 1, -1};
+
+// --- 便利マクロ ---
+#define rep(i, n) for (int i = 0; i < (int)(n); ++i)
+#define reps(i, s, n) for (int i = (int)(s); i < (int)(n); ++i)
+#define rrep(i, n) for (int i = (int)(n) - 1; i >= 0; --i)
+#define all(v) (v).begin(), (v).end()
+#define rall(v) (v).rbegin(), (v).rend()
+#define pb push_back
+#define eb emplace_back
+#define fi first
+#define se second
+
+// --- 入出力高速化 ---
+struct FastIO {
+    FastIO() {
+        ios::sync_with_stdio(false);
+        cin.tie(nullptr);
+        cout << fixed << setprecision(15);
+    }
+} fast_io;
+
+// --- 便利関数 ---
+template<typename T> inline bool chmax(T &a, T b) { if (a < b) { a = b; return true; } return false; }
+template<typename T> inline bool chmin(T &a, T b) { if (a > b) { a = b; return true; } return false; }
+
+// --- 入出力オーバーロード (vector, pair) ---
+template<typename T, typename U> istream &operator>>(istream &is, pair<T, U> &p) { is >> p.first >> p.second; return is; }
+template<typename T, typename U> ostream &operator<<(ostream &os, const pair<T, U> &p) { os << p.first << " " << p.second; return os; }
+template<typename T> istream &operator>>(istream &is, vector<T> &v) { for (T &x : v) is >> x; return is; }
+template<typename T> ostream &operator<<(ostream &os, const vector<T> &v) {
+    for (int i = 0; i < (int)v.size(); ++i) os << v[i] << (i + 1 == (int)v.size() ? "" : " ");
+    return os;
+}
+
+// --- デバッグ用出力 (LOCALマクロが有効な場合のみ) ---
+#ifdef LOCAL
+#define debug(x) cerr << #x << ": " << x << endl
+#else
+#define debug(x)
+#endif
+
+// --- 数学・アルゴリズム集 ---
+ll pow_mod(ll a, ll n, ll m = MOD) {
+    ll res = 1;
+    a %= m;
+    while (n > 0) {
+        if (n & 1) res = res * a % m;
+        a = a * a % m;
+        n >>= 1;
+    }
+    return res;
+}
+
+ll inv_mod(ll a, ll m = MOD) {
+    return pow_mod(a, m - 2, m);
+}
+
+// 組合せ (nCr) 計算用クラス
+struct Combination {
+    vl fact, inv;
+    Combination(int n) : fact(n + 1), inv(n + 1) {
+        fact[0] = 1;
+        for (int i = 1; i <= n; i++) fact[i] = fact[i - 1] * i % MOD;
+        inv[n] = inv_mod(fact[n]);
+        for (int i = n - 1; i >= 0; i--) inv[i] = inv[i + 1] * (i + 1) % MOD;
+    }
+    ll nCr(int n, int r) {
+        if (r < 0 || r > n) return 0;
+        return fact[n] * inv[r] % MOD * inv[n - r] % MOD;
+    }
+};
+
+// --- メイン処理 ---
+int main() {
+    // ここにコードを記述
+    
+    return 0;
+}
+
+/*
+==============================================================================
+  【標準ライブラリ メンバ関数・操作 完全チートシート】
+==============================================================================
+
+[1] vector / deque / string (シーケンス系)
+------------------------------------------------------------------------------
+  .size()        : O(1) 要素数 (戻り値は size_t なので unsigned 注意)
+  .empty()       : O(1) 空ならtrue
+  .clear()       : O(N) 全消去 (capacityは減らない)
+  .resize(n, x)  : O(N) サイズ変更 (増えた分は x で埋める)
+  .assign(n, x)  : O(N) サイズ n, 値 x で初期化 (上書き)
+  .push_back(x)  : O(1) 末尾追加 (コピー発生)
+  .emplace_back(): O(1) 末尾追加 (コンストラクタ直接呼出・高速)
+  .pop_back()    : O(1) 末尾削除 (void)
+  .front()       : O(1) 先頭参照
+  .back()        : O(1) 末尾参照
+  .at(i)         : O(1) 安全なアクセス (範囲外例外送出)
+  [dequeのみ]
+  .push_front(x) : O(1) 先頭追加
+  .pop_front()   : O(1) 先頭削除
+  [stringのみ]
+  .substr(pos, len): O(N) 部分文字列 (len省略で末尾まで)
+  .find(str)     : O(N) 検索。見つかればindex, なければ string::npos
+  .rfind(str)    : O(N) 後ろから検索
+  .c_str()       : O(1) C言語形式(char*)への変換 (printf等で使用)
+  to_string(num) : 数値 -> string (非メンバ関数)
+  stoi(s)/stoll(s): string -> 数値 (非メンバ関数)
+
+[2] set / map / multiset (平衡二分探索木)
+------------------------------------------------------------------------------
+  .insert(x)     : O(log N) 追加
+  .emplace(args) : O(log N) 追加 (高速版)
+  .erase(x)      : O(log N) 値 x を全て削除 (multiset注意)
+  .erase(it)     : O(1)     イテレータ指定で削除 (multisetで1つ消す用)
+  .count(x)      : O(log N) 存在判定 (1 or 0, multisetは個数)
+  .find(x)       : O(log N) イテレータ取得 (なし: .end())
+  .lower_bound(x): O(log N) x "以上" の最初の要素
+  .upper_bound(x): O(log N) x "より大きい" 最初の要素
+  [*it アクセス]
+  *st.begin()    : 最小値
+  *st.rbegin()   : 最大値
+  [mapのみ]
+  mp[key]        : O(log N) アクセス (なければ自動生成・危険)
+  mp.at(key)     : O(log N) アクセス (なければ例外・安全)
+  for(auto [k,v]:mp): C++17 構造化束縛でのループ
+
+[3] stack / queue / priority_queue (コンテナアダプタ)
+------------------------------------------------------------------------------
+  .push(x)       : 追加
+  .emplace(args) : 追加 (高速版)
+  .pop()         : 削除 (void)
+  .empty()       : 空判定
+  .size()        : 要素数
+  [stack / priority_queue]
+  .top()         : O(1) 先頭(最大値)参照
+  [queue]
+  .front()       : O(1) 先頭参照
+  .back()        : O(1) 末尾参照
+
+[4] bitset (ビット集合・高速化)
+------------------------------------------------------------------------------
+  bitset<N> b    : Nビットのフラグ管理 (Nは定数)
+  .set(i)        : iビット目を1にする
+  .reset(i)      : iビット目を0にする
+  .flip(i)       : iビット目を反転 (引数なしで全反転)
+  .test(i)       : iビット目が1か判定 (b[i]と同じだが安全)
+  .count()       : 1の個数 (popcount)
+  .any()         : 1つでも1があればtrue
+  .none()        : 全て0ならtrue
+  .to_ullong()   : unsigned long long 型数値へ変換
+  .to_string()   : "0101..." 文字列へ変換
+  (演算子)       : &, |, ^, ~, <<, >> がそのまま使える
+
+[5] pair / tuple (組)
+------------------------------------------------------------------------------
+  .first / .second : pairの要素アクセス
+  get<N>(t)      : tupleのN番目にアクセス
+  auto [a, b] = p: C++17 構造化束縛 (分解)
+
+[6] iterator操作 (非メンバ関数)
+------------------------------------------------------------------------------
+  distance(it1, it2) : it1からit2までの距離を返す
+  advance(it, n)     : itをn個進める (set/mapではO(n)かかるので注意)
+  prev(it)           : 1つ前のイテレータ
+  next(it)           : 1つ後のイテレータ
+
+[7] algorithm / numeric (標準アルゴリズム)
+------------------------------------------------------------------------------
+  sort(all(v))       : O(N log N) 昇順ソート
+  reverse(all(v))    : O(N) 反転
+  unique(all(v))     : 重複削除(ソート後に使用)。戻り値のitまでが有効要素
+  lower_bound(all(v), x) : x以上の最初の要素を指すイテレータ
+  upper_bound(all(v), x) : xより大きい最初の要素を指すイテレータ
+  count(all(v), x)   : 値がxである要素の個数
+  next_permutation(all(v)) : 次の順列を生成(辞書順)。あればtrue
+  min_element(all(v)): 最小値を指すイテレータ
+  max_element(all(v)): 最大値を指すイテレータ
+  iota(all(v), x)    : 0, 1, 2... のように連番で埋める
+  accumulate(all(v), 0LL) : 合計値 (初期値 0LL を指定してオーバーフロー防止)
+  gcd(a, b) / lcm(a, b)   : 最大公約数 / 最小公倍数 (C++17以上)
+
+==============================================================================
+*/
