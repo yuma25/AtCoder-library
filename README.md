@@ -9,6 +9,9 @@
 
 - [AtCoder 完全自動化環境 構築ガイド](./tools/環境構築ガイド.md)
 - [AtCoder 自動化環境 使い方ガイド](./docs/使い方ガイド.md)
+- [C++ 最強スニペット解説 (cp)](./snippets/cpp_docs/README.md)
+- [Python 最強スニペット解説 (pycp)](./snippets/python_docs/README.md)
+- [競技プログラミング：コンテナ選択ガイド](./docs/containers_guide/README.md)
 - [C++ 最強テンプレート解説](./docs/CPP解説.md)
 - [Python 競技プログラミングテンプレート解説](./docs/Python解説.md)
 
