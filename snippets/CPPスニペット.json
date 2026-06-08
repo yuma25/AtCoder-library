@@ -218,40 +218,5 @@
       "*/"
     ],
     "description": "Competitive Programming Template with Advanced Cheat Sheet"
-  },
-  "C++ Union-Find": {
-    "prefix": "UnionFind",
-    "body": [
-      "struct UnionFind {",
-      "    vector<int> parent;",
-      "    vector<int> sz;",
-      "",
-      "    UnionFind(int n) : parent(n), sz(n, 1) {",
-      "        for (int i = 0; i < n; i++) parent[i] = i;",
-      "    }",
-      "",
-      "    int root(int x) {",
-      "        if (parent[x] == x) return x;",
-      "        return parent[x] = root(parent[x]);",
-      "    }",
-      "",
-      "    bool isSame(int x, int y) {",
-      "        return root(x) == root(y);",
-      "    }",
-      "",
-      "    void unite(int x, int y) {",
-      "        int rootX = root(x), rootY = root(y);",
-      "        if (rootX == rootY) return;",
-      "        if (sz[rootX] < sz[rootY]) swap(rootX, rootY);",
-      "        parent[rootY] = rootX;",
-      "        sz[rootX] += sz[rootY];",
-      "    }",
-      "",
-      "    int size(int x) {",
-      "        return sz[root(x)];",
-      "    }",
-      "};"
-    ],
-    "description": "Union-Find with path compression and union by size"
   }
 }
