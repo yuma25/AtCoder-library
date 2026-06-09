@@ -139,10 +139,12 @@ template<typename T> istream &operator>>(istream &is, vector<T> &v) { for (T &x 
 - **`.insert(x)`**: 【引数:要素, 戻り値:pair<it, bool>】 追加。
 - **`.erase(x)`**: 【引数:値, 戻り値:size_t】 その値をすべて削除。
 - **`.erase(it)`**: 【引数:イテレータ, 戻り値:無】 その場所を1つだけ削除。
+- **`.contains(x)`**: 【C++20〜】存在判定 (true/false)。
 - **`.count(x)`**: 【引数:値, 戻り値:size_t】 存在判定。
 - **`.find(x)`**: 【引数:値, 戻り値:iterator】 見つからなければ `.end()`。
 - **`.lower_bound(x)`**: 【引数:値, 戻り値:iterator】 x 以上の最初の要素。
 - **`*st.begin() / *st.rbegin()`**: 最小値・最大値。
+- **[multiset] 特定の値を1つだけ消す**: `if (auto it = st.find(x); it != st.end()) st.erase(it);`
 - **`mp[key]`**: 【引数:キー, 戻り値:値の参照】 map の要素アクセス。
 
 ### [3] stack / queue / priority_queue (コンテナアダプタ)

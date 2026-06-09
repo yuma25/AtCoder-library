@@ -101,6 +101,11 @@ res = comb.nCr(10, 3)
 ### [6] 順列・組合せ (itertools)
 - **`itertools.permutations(A)`**: 全順列を生成します。ループで回して使います。
 
+### [7] 数学 (math) / その他
+- **`math.gcd(a, b) / math.lcm(a, b)`**: 最大公約数・最小公倍数。
+- **`sum(A) / max(A) / min(A)`**: 合計・最大・最小。
+- **`collections.Counter(A)`**: 要素の出現回数を数える最強ツール。
+
 ---
 
 ---

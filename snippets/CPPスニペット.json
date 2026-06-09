@@ -117,6 +117,16 @@
       "  【標準ライブラリ メンバ関数・操作 完全チートシート】",
       "==============================================================================",
       "",
+      " [💡 宣言・初期化の定石 (スニペット利用可)]",
+      "  v1       : vector<int> v(N, 0);",
+      "  v2       : vector<vector<int>> v(H, vector<int>(W, 0));",
+      "  pqmax    : priority_queue<int> pq;",
+      "  pqmin    : priority_queue<int, vector<int>, greater<int>> pq;",
+      "  set_init : set<int> st;",
+      "  map_init : map<string, int> mp;",
+      "",
+      "  priority_queue<int, vector<int>, greater<int>> pq; // 最小値から取り出す昇順キュー",
+      "",
       "[1] vector / deque / string (シーケンス系)",
       "------------------------------------------------------------------------------",
       " [共通: 基本操作]",
@@ -313,5 +323,47 @@
       "*/"
     ],
     "description": "Competitive Programming Template with Advanced Cheat Sheet"
+  },
+  "vector 1D": {
+    "prefix": "v1",
+    "body": [
+      "vector<${1:int}> ${2:v}(${3:N}, ${4:0});"
+    ],
+    "description": "vector 1D declaration"
+  },
+  "vector 2D": {
+    "prefix": "v2",
+    "body": [
+      "vector<vector<${1:int}>> ${2:v}(${3:H}, vector<${1:int}>(${4:W}, ${5:0}));"
+    ],
+    "description": "vector 2D declaration"
+  },
+  "priority_queue max": {
+    "prefix": "pqmax",
+    "body": [
+      "priority_queue<${1:int}> ${2:pq};"
+    ],
+    "description": "priority_queue (max-heap)"
+  },
+  "priority_queue min": {
+    "prefix": "pqmin",
+    "body": [
+      "priority_queue<${1:int}, vector<${1:int}>, greater<${1:int}>> ${2:pq};"
+    ],
+    "description": "priority_queue (min-heap)"
+  },
+  "set init": {
+    "prefix": "set_init",
+    "body": [
+      "set<${1:int}> ${2:st};"
+    ],
+    "description": "set declaration"
+  },
+  "map init": {
+    "prefix": "map_init",
+    "body": [
+      "map<${1:string}, ${2:int}> ${3:mp};"
+    ],
+    "description": "map declaration"
   }
 }
