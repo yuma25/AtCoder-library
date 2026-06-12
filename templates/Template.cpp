@@ -9,16 +9,16 @@ using namespace std;
  */
 
 // --- 型エイリアス ---
-using ll = long long;
+using ll = long long;         // 64bit整数 (例: ll a = 1e12;)
 using ull = unsigned long long;
-using ld = long double;
-using vi = vector<int>;
+using ld = long double;       // 高精度浮動小数点
+using vi = vector<int>;       // 1次元配列 (例: vi v(n);)
 using vl = vector<ll>;
-using vvi = vector<vi>;
+using vvi = vector<vi>;       // 2次元配列 (例: vvi g(n, vi(m));)
 using vvl = vector<vl>;
-using pii = pair<int, int>;
+using pii = pair<int, int>;   // 2つの値の組 (例: pii p = {1, 2};)
 using pll = pair<ll, ll>;
-using vpii = vector<pii>;
+using vpii = vector<pii>;     // pairの配列
 using vpll = vector<pll>;
 
 // --- 定数 ---
@@ -27,19 +27,25 @@ const int INF_INT = 1e9;
 const int MOD = 998244353; // AtCoderで主流のMOD
 const int MOD_OLD = 1e9 + 7;
 const double PI = acos(-1);
-const int dx[] = {0, 1, 0, -1, 1, 1, -1, -1}; // 4方向 + 斜め
+
+/* 
+ * 方向配列: グリッド探索などで隣接マスを走査する際に使用
+ * 4方向: for(int i=0; i<4; i++) { int nx = x + dx[i], ny = y + dy[i]; }
+ * 8方向: for(int i=0; i<8; i++) { ... }
+ */
+const int dx[] = {0, 1, 0, -1, 1, 1, -1, -1}; // 右, 下, 左, 上, 右下, 右上, 左下, 左上
 const int dy[] = {1, 0, -1, 0, 1, -1, 1, -1};
 
 // --- 便利マクロ ---
-#define rep(i, n) for (int i = 0; i < (int)(n); ++i)
-#define reps(i, s, n) for (int i = (int)(s); i < (int)(n); ++i)
-#define rrep(i, n) for (int i = (int)(n) - 1; i >= 0; --i)
-#define all(v) (v).begin(), (v).end()
-#define rall(v) (v).rbegin(), (v).rend()
-#define pb push_back
-#define eb emplace_back
-#define fi first
-#define se second
+#define rep(i, n) for (int i = 0; i < (int)(n); ++i)        // 0からn-1まで (例: rep(i, n) cin >> v[i];)
+#define reps(i, s, n) for (int i = (int)(s); i < (int)(n); ++i) // sからn-1まで
+#define rrep(i, n) for (int i = (int)(n) - 1; i >= 0; --i)   // n-1から0まで逆順
+#define all(v) (v).begin(), (v).end()                        // 全範囲 (例: sort(all(v));)
+#define rall(v) (v).rbegin(), (v).rend()                     // 逆順全範囲
+#define pb push_back                                         // 末尾追加 (例: v.pb(x);)
+#define eb emplace_back                                      // 高速末尾追加
+#define fi first                                             // pairの第1要素
+#define se second                                            // pairの第2要素
 
 // --- 入出力高速化 ---
 struct FastIO {
@@ -53,15 +59,6 @@ struct FastIO {
 // --- 便利関数 ---
 template<typename T> inline bool chmax(T &a, T b) { if (a < b) { a = b; return true; } return false; }
 template<typename T> inline bool chmin(T &a, T b) { if (a > b) { a = b; return true; } return false; }
-
-// --- 入出力オーバーロード (vector, pair) ---
-template<typename T, typename U> istream &operator>>(istream &is, pair<T, U> &p) { is >> p.first >> p.second; return is; }
-template<typename T, typename U> ostream &operator<<(ostream &os, const pair<T, U> &p) { os << p.first << " " << p.second; return os; }
-template<typename T> istream &operator>>(istream &is, vector<T> &v) { for (T &x : v) is >> x; return is; }
-template<typename T> ostream &operator<<(ostream &os, const vector<T> &v) {
-    for (int i = 0; i < (int)v.size(); ++i) os << v[i] << (i + 1 == (int)v.size() ? "" : " ");
-    return os;
-}
 
 // --- デバッグ用出力 (LOCALマクロが有効な場合のみ) ---
 #ifdef LOCAL
@@ -113,16 +110,6 @@ int main() {
   【標準ライブラリ メンバ関数・操作 完全チートシート】
 ==============================================================================
 
- [💡 宣言・初期化の定石 (スニペット利用可)]
-  v1       : vector<int> v(N, 0);
-  v2       : vector<vector<int>> v(H, vector<int>(W, 0));
-  pqmax    : priority_queue<int> pq;
-  pqmin    : priority_queue<int, vector<int>, greater<int>> pq;
-  set_init : set<int> st;
-  map_init : map<string, int> mp;
-
-  priority_queue<int, vector<int>, greater<int>> pq; // 最小値から取り出す昇順キュー
-
 [1] vector / deque / string (シーケンス系)
 ------------------------------------------------------------------------------
  [共通: 基本操作]
@@ -130,53 +117,30 @@ int main() {
   .empty()       : O(1) 空ならtrue
   .clear()       : O(N) 全消去 (capacityは減らない)
   .resize(n, x)  : O(N) サイズ変更 (増えた分は x で埋める)
-  .assign(n, x)  : O(N) サイズ n, 値 x で初期化 (上書き)
-  .front()       : O(1) 先頭参照
-  .back()        : O(1) 末尾参照
-  .at(i)         : O(1) 安全なアクセス (範囲外アクセス時に例外を送出)
+  .assign(n, x)  : O(N) サイズ n, 値 x で初期化
+  .push_back(x)  : O(1)※ 末尾に追加 (※平均)
+  .pop_back()    : O(1) 末尾を削除
+  .front() / .back() : 先頭/末尾の参照
+  v[i] / v.at(i) : i番目へのアクセス (.atは範囲外チェックあり)
 
- [共通: イテレータ・途中操作] ★鉄則
-  .begin()/.end(): O(1) 先頭 / 末尾の「次」を指すイテレータを取得
-  .insert(it, x) : O(N) 途中への挿入 (指定位置以降をズラすため vector/string では遅い)
-  .erase(it)     : O(N) 途中の削除 (指定位置以降を前に詰めるため vector/string では遅い)
+ [共通: イテレータ系]
+  v.begin() / v.end()   : 先頭 / 末尾の次 を指すイテレータ
+  v.rbegin() / v.rend() : 末尾 / 先頭の前 を指す逆順イテレータ
+  v.erase(it)           : O(N) 指定位置の要素を削除
+  v.insert(it, x)       : O(N) 指定位置に要素を挿入
 
- [共通: メモリ管理] ★鉄則
-  .reserve(n)    : O(N) メモリの事前確保 (push_back時の再アロケーションを防ぎ高速化する)
-  .capacity()    : O(1) 現在確保されているメモリ量 (size以上になる)
-  .shrink_to_fit(): O(N) 使っていない余分なcapacityを解放する
+ [deque 特有]
+  .push_front(x) : O(1) 先頭に追加
+  .pop_front()   : O(1) 先頭を削除
 
- [追加・削除]
-  .push_back(x)  : O(1) 末尾追加 (※内部配列の拡張が発生した瞬間だけO(N))
-  .emplace_back(): O(1) 末尾追加 (コンストラクタ直接呼出でコピー省略・push_backより高速)
-  .pop_back()    : O(1) 末尾削除 (戻り値は void なので注意)
+ [string 特有]
+  .substr(pos, len) : O(len) 部分文字列の抽出
+  stoi(s) / to_string(x) : 数値変換
 
- [dequeのみ]
-  .push_front(x) : O(1) 先頭追加 (vectorと違いO(1)で完了)
-  .pop_front()   : O(1) 先頭削除
-
- [stringのみ]
-  .substr(pos, len): O(N) 部分文字列の取得 (len省略で末尾まで)
-  .replace(pos, n, str): O(N) pos番目からn文字をstrに置換 ★追加
-  .find(str)     : O(N) 検索。見つかれば先頭のindex, なければ string::npos
-  .rfind(str)    : O(N) 後ろから検索
-  .c_str()       : O(1) C言語形式(char*)への変換 (printf等で使用)
-
- [関連する非メンバ関数・アルゴリズム]
-  to_string(num) : 数値 -> string に変換
-  stoi(s)        : string -> int に変換
-  stoll(s)       : string -> long long に変換 (※巨大な数値を扱う競技プログラミングで必須)
-  sort(v.begin(), v.end())    : O(N log N) 要素の昇順ソート
-  reverse(v.begin(), v.end()) : O(N) 要素の並びを反転させる
-
-
-[2] set / map / multiset (平衡二分探索木)
+[2] set / multiset / map (連想コンテナ)
 ------------------------------------------------------------------------------
- [共通: 基本・追加・削除]
-  .size()        : O(1) 要素数
-  .empty()       : O(1) 空ならtrue
-  .clear()       : O(N) 全消去
+ [共通: 基本操作]
   .insert(x)     : O(log N) 追加
-  .emplace(args) : O(log N) 追加 (コピー省略・高速版)
   .erase(x)      : O(log N) 値 x を削除 (※multisetでは一致する "全て" が消えるので注意！)
   .erase(it)     : O(1)     イテレータ指定で削除
 
@@ -191,7 +155,7 @@ int main() {
   *st.begin()    : O(1) 最小値
   *st.rbegin()   : O(1) 最大値
   prev(it)       : O(1) 1つ前（小さい方）のイテレータを取得 (※itがbegin()でない時のみ有効)
-  next(it)           : O(1) 1つ次（大きい方）のイテレータを取得
+  next(it)       : O(1) 1つ次（大きい方）のイテレータを取得
 
  [multiset 特有の実踐テクニック] ★鉄則
   // 値xを "1つだけ" 消したい場合の定石
@@ -201,6 +165,10 @@ int main() {
   mp[key]        : O(log N) アクセス (※なければ自動生成・0や空文字が入る。バグの温床に注意)
   mp.at(key)     : O(log N) アクセス (※なければ例外送出・安全)
   for(auto [k,v]:mp): O(N)  C++17 構造化束縛での全要素ループ
+
+  💡 実戦テクニック: 降順（キーが大きい順）に並ぶ map/set を作る
+  map<int, string, greater<int>> mp; // キーの大きい順に格納される
+  set<int, greater<int>> st;         // 値の大きい順に格納される
 
  [💡 発展: unordered_set / unordered_map] ★汎用性とリスク
   ・内部でハッシュテーブルを使用。自動ソートされない（順番はバラバラ）。
@@ -233,6 +201,13 @@ int main() {
   
   💡 実戦テクニック: 最小値から取り出す（昇順）キューを作る呪文
   priority_queue<int, vector<int>, greater<int>> pq;
+  // 構造体などで使う場合: std::greater<型名> ※比較演算子 > のオーバーロードが必要
+  
+  💡 比較関数の指定 (sort, priority_queue)
+  - sort(all(v), greater<int>()) : 降順ソート
+  - priority_queue<T, vector<T>, greater<T>> : 昇順 (最小値が top)
+  - priority_queue<T, vector<T>, less<T>>    : 降順 (最大値が top) ※デフォルト
+  - 構造体で比較: bool operator>(const T& a, const T& b) { return a.val > b.val; } // greater用
 
 [4] bitset (ビット集合・高速化)
 ------------------------------------------------------------------------------
@@ -303,10 +278,6 @@ int main() {
   chmax(a, b)    : a < b なら a = b とし true を返す。例: chmax(ans, x);
   chmin(a, b)    : a > b なら a = b とし true を返す。例: chmin(ans, x);
 
- 💡 高度な入出力 (オーバーロード)
-  cin >> p / cout << p : pair を直接読み書き。例: cin >> p;
-  cin >> v / cout << v : vector を直接読み書き。例: vi v(n); cin >> v; cout << v << endl;
-
  💡 デバッグ
   debug(x)       : 変数名と値を表示。例: debug(ans); (※-DLOCAL環境のみ有効)
 
@@ -314,6 +285,62 @@ int main() {
   pow_mod(a, n)  : a の n 乗を MOD で割った余りを計算 (O(log n))
   inv_mod(a)     : a の MOD における逆元 (割り算の代わり) を計算
   Combination c(N): nCr を O(1) で求めるクラス。例: Combination comb(100005); comb.nCr(n, r);
+
+==============================================================================
+
+【標準ライブラリ 活用ガイド (正式表記版)】
+「降順」「昇順」という表現を統一し、マクロを使わずに標準ライブラリの正式な表記だけで解説します。
+
+1. 各コンテナ単体での入出力
+------------------------------------------------------------------------------
+① 配列・シーケンス系 (vector, deque, string)
+  // vector
+  vector<int> v(n);
+  for (int i = 0; i < n; ++i) cin >> v[i];
+  for (int i = 0; i < n; ++i) cout << v[i] << (i == n - 1 ? "" : " ");
+
+② 平衡二分探索木系 (set, map, multiset)
+  // set (自動で昇順ソート)
+  set<int> st;
+  for (int i = 0; i < n; ++i) { int x; cin >> x; st.insert(x); }
+  for (int x : st) cout << x << " ";
+
+  // map (キーが辞書順の昇順でソート)
+  map<string, int> mp;
+  for (int i = 0; i < n; ++i) { string s; int x; cin >> s >> x; mp[s] = x; }
+  for (const auto& [key, value] : mp) cout << key << ":" << value << "\n";
+
+③ 特殊なコンテナ (stack, queue, priority_queue)
+  // priority_queue (デフォルトは降順)
+  priority_queue<int> pq;
+  while (!pq.empty()) { cout << pq.top() << " "; pq.pop(); }
+
+④ ビット・組・イテレータ操作
+  bitset<8> b; cin >> b;
+  pair<int, int> p; cin >> p.first >> p.second;
+  tuple<int, int, int> t; cin >> get<0>(t) >> get<1>(t) >> get<2>(t);
+  advance(it, 2); // イテレータを2進める
+
+2. 定番の組み合わせパターン
+------------------------------------------------------------------------------
+パターンA：グラフ表現の隣接リスト (vector<vector<int>>)
+  vector<vector<int>> graph(n + 1);
+  for (int i = 0; i < m; ++i) {
+      int u, v; cin >> u >> v;
+      graph[u].push_back(v); graph[v].push_back(u); // 無向グラフ
+  }
+
+パターンB：複数属性のソート (vector<pair<int, int>>)
+  vector<pair<int, int>> points(n);
+  sort(points.begin(), points.end()); // firstの昇順 -> secondの昇順
+
+パターンC：属性ごとのデータ集計 (map<string, vector<int>>)
+  map<string, vector<int>> database;
+  database[name].push_back(score);
+
+パターンD：ダイクストラ法で用いる昇順キュー
+  priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+  // コスト(first)が小さい順（昇順）に取り出せる
 
 ==============================================================================
 */
