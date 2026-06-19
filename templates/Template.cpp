@@ -1,5 +1,11 @@
 #include <bits/stdc++.h>
 using namespace std;
+using namespace std::views; // C++20: views:: を省略可能に
+
+// --- AtCoder Library (ACL) ※使用時はコメントアウトを解除 ---
+// #include <atcoder/all>
+// using namespace atcoder;
+// using mint = modint998244353;
 
 /**
  * @brief 競技プログラミング用テンプレート (最強チートシート版)
@@ -26,15 +32,15 @@ const ll INF = 1e18;
 const int INF_INT = 1e9;
 const int MOD = 998244353; // AtCoderで主流のMOD
 const int MOD_OLD = 1e9 + 7;
-const double PI = acos(-1);
+const double PI = std::numbers::pi; // C++20: 高精度な円周率定数
 
 /* 
  * 方向配列: グリッド探索などで隣接マスを走査する際に使用
- * 4方向: for(int i=0; i<4; i++) { int nx = x + dx[i], ny = y + dy[i]; }
- * 8方向: for(int i=0; i<8; i++) { ... }
  */
-const int dx[] = {0, 1, 0, -1, 1, 1, -1, -1}; // 右, 下, 左, 上, 右下, 右上, 左下, 左上
-const int dy[] = {1, 0, -1, 0, 1, -1, 1, -1};
+const int dx4[] = {0, 1, 0, -1}; // 4方向 (右, 下, 左, 上)
+const int dy4[] = {1, 0, -1, 0};
+const int dx8[] = {0, 1, 0, -1, 1, 1, -1, -1}; // 8方向 (4方向 + 斜め)
+const int dy8[] = {1, 0, -1, 0, 1, -1, 1, -1};
 
 // --- 便利マクロ ---
 #define rep(i, n) for (int i = 0; i < (int)(n); ++i)        // 0からn-1まで (例: rep(i, n) cin >> v[i];)
@@ -60,17 +66,17 @@ struct FastIO {
 template<typename T> inline bool chmax(T &a, T b) { if (a < b) { a = b; return true; } return false; }
 template<typename T> inline bool chmin(T &a, T b) { if (a > b) { a = b; return true; } return false; }
 
-// --- デバッグ用出力 (LOCALマクロが有効な場合のみ) ---
-#ifdef LOCAL
-#define debug(x) cerr << #x << ": " << x << endl
-#else
-#define debug(x)
-#endif
+// グリッドの範囲内判定 (r: 行, c: 列, h: 高さ, w: 幅)
+inline bool in_grid(int r, int c, int h, int w) {
+    return 0 <= r && r < h && 0 <= c && c < w;
+}
+
 
 // --- 数学・アルゴリズム集 ---
+// 繰り返し二乗法 (負の数 a にも対応)
 ll pow_mod(ll a, ll n, ll m = MOD) {
     ll res = 1;
-    a %= m;
+    a = (a % m + m) % m;
     while (n > 0) {
         if (n & 1) res = res * a % m;
         a = a * a % m;
@@ -79,22 +85,24 @@ ll pow_mod(ll a, ll n, ll m = MOD) {
     return res;
 }
 
+// 逆元 (m が素数の時のみ有効)
 ll inv_mod(ll a, ll m = MOD) {
     return pow_mod(a, m - 2, m);
 }
 
-// 組合せ (nCr) 計算用クラス
+// 組合せ (nCr) 計算用クラス (MODをテンプレート引数で受け取ることで書き換えバグを防ぐ)
+template<int m = MOD>
 struct Combination {
     vl fact, inv;
     Combination(int n) : fact(n + 1), inv(n + 1) {
         fact[0] = 1;
-        for (int i = 1; i <= n; i++) fact[i] = fact[i - 1] * i % MOD;
-        inv[n] = inv_mod(fact[n]);
-        for (int i = n - 1; i >= 0; i--) inv[i] = inv[i + 1] * (i + 1) % MOD;
+        for (int i = 1; i <= n; i++) fact[i] = fact[i - 1] * i % m;
+        inv[n] = pow_mod(fact[n], m - 2, m); // inv_mod と同等
+        for (int i = n - 1; i >= 0; i--) inv[i] = inv[i + 1] * (i + 1) % m;
     }
     ll nCr(int n, int r) {
         if (r < 0 || r > n) return 0;
-        return fact[n] * inv[r] % MOD * inv[n - r] % MOD;
+        return fact[n] * inv[r] % m * inv[n - r] % m;
     }
 };
 
@@ -112,179 +120,151 @@ int main() {
 
 [1] vector / deque / string (シーケンス系)
 ------------------------------------------------------------------------------
- [共通: 基本操作]
-  .size()        : O(1) 要素数 (戻り値は size_t なので引き算時のアンダーフロー注意)
-  .empty()       : O(1) 空ならtrue
-  .clear()       : O(N) 全消去 (capacityは減らない)
-  .resize(n, x)  : O(N) サイズ変更 (増えた分は x で埋める)
-  .assign(n, x)  : O(N) サイズ n, 値 x で初期化
-  .push_back(x)  : O(1)※ 末尾に追加 (※平均)
-  .pop_back()    : O(1) 末尾を削除
-  .front() / .back() : 先頭/末尾の参照
-  v[i] / v.at(i) : i番目へのアクセス (.atは範囲外チェックあり)
-
- [共通: イテレータ系]
-  v.begin() / v.end()   : 先頭 / 末尾の次 を指すイテレータ
-  v.rbegin() / v.rend() : 末尾 / 先頭の前 を指す逆順イテレータ
-  v.erase(it)           : O(N) 指定位置の要素を削除
-  v.insert(it, x)       : O(N) 指定位置に要素を挿入
-
- [deque 特有]
-  .push_front(x) : O(1) 先頭に追加
-  .pop_front()   : O(1) 先頭を削除
-
- [string 特有]
-  .substr(pos, len) : O(len) 部分文字列の抽出
-  stoi(s) / to_string(x) : 数値変換
+  .size()        : O(1) 要素数 (戻り値は size_t なので引き算時のアンダーフロー注意) | 例: int n = (int)v.size();
+  ssize(v)       : O(1) 【C++20】符号付きサイズ取得。ssize(v) - 1 も安全 | 例: for(int i=0; i<ssize(v)-1; ++i)
+  .empty()       : O(1) 空ならtrue | 例: if (v.empty()) return 0;
+  .clear()       : O(N) 全消去 (capacityは減らない) | 例: v.clear();
+  .resize(n, x)  : O(N) サイズ変更 (増えた分は x で埋める) | 例: dp.resize(N + 1, -1);
+  .assign(n, x)  : O(N) サイズ n, 値 x で初期化 | 例: v.assign(N, 0);
+  .push_back(x)  : O(1)※ 末尾に追加 (※平均) | 例: v.push_back(10);
+  .pop_back()    : O(1) 末尾を削除 (※空コンテナ注意) | 例: v.pop_back();
+  .front() / .back() : 先頭/末尾の参照 (※空コンテナ注意) | 例: int first = v.front(); int last = v.back();
+  v[i] / v.at(i) : i番目へのアクセス (.atは範囲外チェックあり) | 例: v[i] = 100;
+  v.begin() / v.end()   : 先頭 / 末尾の次 を指すイテレータ | 例: sort(v.begin(), v.end());
+  v.rbegin() / v.rend() : 末尾 / 先頭の前 を指す逆順イテレータ | 例: sort(v.rbegin(), v.rend());
+  v.erase(it)           : O(N) 指定位置の要素を削除 | 例: v.erase(v.begin() + 3);
+  v.insert(it, x)       : O(N) 指定位置に要素を挿入 | 例: v.insert(v.begin() + 1, 99);
+  std::erase(v, x)      : O(N) 【C++20〜】値 x をすべて削除 (Erase-Removeの代替) | 例: std::erase(v, 7);
+  std::erase_if(v, pred): O(N) 【C++20〜】条件を満たす要素をすべて削除 | 例: std::erase_if(v, [](int x){ return x % 2 == 0; });
+  .push_front(x) : O(1) 先頭に追加 [deque 特有] | 例: deq.push_front(5);
+  .pop_front()   : O(1) 先頭を削除 [deque 特有] | 例: deq.pop_front();
+  .substr(pos, len) : O(len) 部分文字列の抽出 [string 特有] | 例: string sub = s.substr(2, 3);
+  stoi(s) / to_string(x) : 数値変換 [string 特有] | 例: int val = stoi("123"); string str = to_string(456);
 
 [2] set / multiset / map (連想コンテナ)
 ------------------------------------------------------------------------------
- [共通: 基本操作]
-  .insert(x)     : O(log N) 追加
-  .erase(x)      : O(log N) 値 x を削除 (※multisetでは一致する "全て" が消えるので注意！)
-  .erase(it)     : O(1)     イテレータ指定で削除
-
- [共通: 検索系]
-  .contains(x)   : O(log N) 【C++20〜】存在判定 (true/falseを返す。countより直感的)
-  .count(x)      : O(log N) 存在判定 (1 or 0, multisetは個数。C++17以前の主流)
-  .find(x)       : O(log N) イテレータ取得 (なし: .end())
-  .lower_bound(x): O(log N) x "以上" の最初の要素へのイテレータ
-  .upper_bound(x): O(log N) x "より大きい" 最初の要素へのイテレータ
-
- [イテレータ操作・値の取得]
-  *st.begin()    : O(1) 最小値
-  *st.rbegin()   : O(1) 最大値
-  prev(it)       : O(1) 1つ前（小さい方）のイテレータを取得 (※itがbegin()でない時のみ有効)
-  next(it)       : O(1) 1つ次（大きい方）のイテレータを取得
-
- [multiset 特有の実踐テクニック] ★鉄則
-  // 値xを "1つだけ" 消したい場合の定石
-  if (auto it = st.find(x); it != st.end()) st.erase(it);
-
- [mapのみ]
-  mp[key]        : O(log N) アクセス (※なければ自動生成・0や空文字が入る。バグの温床に注意)
-  mp.at(key)     : O(log N) アクセス (※なければ例外送出・安全)
-  for(auto [k,v]:mp): O(N)  C++17 構造化束縛での全要素ループ
-
-  💡 実戦テクニック: 降順（キーが大きい順）に並ぶ map/set を作る
-  map<int, string, greater<int>> mp; // キーの大きい順に格納される
-  set<int, greater<int>> st;         // 値の大きい順に格納される
-
- [💡 発展: unordered_set / unordered_map] ★汎用性とリスク
-  ・内部でハッシュテーブルを使用。自動ソートされない（順番はバラバラ）。
-  ・各操作が「平均 O(1)」と爆速だが、最悪 O(N) になる。
-  ・競技プログラミングでは「意図的にハッシュ衝突を起こす入力」でTLE（時間切れ）
-   にされるリスクがあるため、速度が厳しくない限り通常の set/map が推奨される。
+  .insert(x)     : O(log N) 追加 | 例: st.insert(5);
+  .erase(x)      : O(log N) 値 x を削除 (※multisetでは一致する "全て" が消えるので注意！) | 例: st.erase(5);
+  .erase(it)     : O(1)     イテレータ指定で削除 (※multisetで1つだけ消す用の定石) | 例: st.erase(st.find(x));
+  .contains(x)   : O(log N) 【C++20〜】存在判定 (true/falseを返す。countより直感的) | 例: if (st.contains(5))
+  .count(x)      : O(log N) 存在判定 (1 or 0, multisetは個数。C++17以前の主流) | 例: int num = st.count(5);
+  .find(x)       : O(log N) イテレータ取得 (なし: .end()) | 例: auto it = st.find(5); if (it != st.end())
+  .lower_bound(x): O(log N) x "以上" の最初の要素へのイテレータ | 例: auto it = st.lower_bound(5);
+  .upper_bound(x): O(log N) x "より大きい" 最初の要素へのイテレータ | 例: auto it = st.upper_bound(5);
+  *st.begin()    : O(1) 最小値 (※空コンテナ注意) | 例: int min_val = *st.begin();
+  *st.rbegin()   : O(1) 最大値 (※空コンテナ注意) | 例: int max_val = *st.rbegin();
+  prev(it)       : O(1) 1つ前（小さい方）のイテレータを取得 (※it != begin 用) | 例: auto prev_it = prev(it);
+  next(it)       : O(1) 1つ次（大きい方）のイテレータを取得 | 例: auto next_it = next(it);
+  mp[key]        : O(log N) アクセス (※なければ自動生成・0や空文字が入る副作用に注意) | 例: mp["apple"] = 100;
+  mp.at(key)     : O(log N) アクセス (※なければ例外送出・安全) | 例: int price = mp.at("apple");
+  for(auto [k,v]:mp): O(N)  C++17 構造化束縛での全要素ループ | 例: for (auto [key, val] : mp) { ... }
+  greater<T>     : map/set を降順（大きい順）に並べ替える呪文 | 例: set<int, greater<int>> st;
+  unordered_map  : 平均O(1) ハッシュテーブル使用 (※撃撃墜TLE対策には custom_hash 推奨) | 例: unordered_map<ll, int, custom_hash> mp;
 
 [3] stack / queue / priority_queue (コンテナアダプタ)
 ------------------------------------------------------------------------------
- [共通の注意点] ★鉄則
-  ※これらには .clear() が存在しません。空にしたい場合は
-   「q = queue<int>();」のように空のオブジェクトを再代入するのが定石です。
-
-  .empty()       : O(1) 空判定
-  .size()        : O(1) 要素数
-
- [stack (LIFO) / queue (FIFO)]
-  .push(x)       : O(1) 追加
-  .emplace(args) : O(1) 追加 (高速版)
-  .pop()         : O(1) 削除 (戻り値はvoidなので、値を使う場合は先に取得する)
-  .top()         : O(1) 一番上の値を取得 [stackのみ]
-  .front()       : O(1) 先頭の値を取得   [queueのみ]
-  .back()        : O(1) 末尾の値を取得   [queueのみ]
-
- [priority_queue (優先度付きキュー / ヒープ)]
-  .push(x)       : O(log N) 追加 (内部でツリーを再構築するため O(1) ではない)
-  .emplace(args) : O(log N) 追加 (高速版)
-  .pop()         : O(log N) 最大値（または最小値）を削除
-  .top()         : O(1) 最大値（または最小値）を参照
-  
-  💡 実戦テクニック: 最小値から取り出す（昇順）キューを作る呪文
-  priority_queue<int, vector<int>, greater<int>> pq;
-  // 構造体などで使う場合: std::greater<型名> ※比較演算子 > のオーバーロードが必要
-  
-  💡 比較関数の指定 (sort, priority_queue)
-  - sort(all(v), greater<int>()) : 降順ソート
-  - priority_queue<T, vector<T>, greater<T>> : 昇順 (最小値が top)
-  - priority_queue<T, vector<T>, less<T>>    : 降順 (最大値が top) ※デフォルト
-  - 構造体で比較: bool operator>(const T& a, const T& b) { return a.val > b.val; } // greater用
+  q = queue<T>() : これらには .clear() が無いため空オブジェクトを再代入する | 例: q = queue<int>();
+  .empty()       : O(1) 空判定 | 例: while (!q.empty())
+  .size()        : O(1) 要素数 | 例: int rem = q.size();
+  .push(x)       : O(1) 追加 | 例: stk.push(x);
+  .emplace(args) : O(1) 追加 (高速版) | 例: q.emplace(x, y);
+  .pop()         : O(1)/O(log N) 削除 (戻り値void、値は事前に取得する) | 例: q.pop();
+  .top()         : O(1) 一番上の値を取得 [stack / priority_queue のみ] | 例: int cur = stk.top();
+  .front()       : O(1) 先頭の値を取得 [queue のみ] | 例: int cur = q.front();
+  .back()        : O(1) 末尾の値を取得 [queue のみ] | 例: int last = q.back();
+  greater<T>     : 最小値から取り出す（昇順 / 最小ヒープ） priority_queue の定義 | 例: priority_queue<int, vector<int>, greater<int>> pq;
 
 [4] bitset (ビット集合・高速化)
 ------------------------------------------------------------------------------
- [初期化のバリエーション]
-  bitset<N> b          : すべて0で初期化 (※Nは定数である必要あり。変数Nは不可)
-  bitset<N> b(数値)    : 整数から下位ビットを初期化
-  bitset<N> b("1010")  : "0" と "1" の文字列から初期化 (右端が0ビット目になる)
-
- [ビット操作]
-  .set(i)        : iビット目を1にする (引数なしで 全ビットを1にする)
-  .reset(i)      : iビット目を0にする (引数なしで 全ビットを0にする)
-  .flip(i)       : iビット目を反転    (引数なしで 全ビットを反転)
-
- [状態判定]
-  .test(i)       : iビット目が1か判定 (b[i]と同じだが範囲外アクセス時に例外で安全)
-  .all()         : 全て1ならtrue (C++11)
-  .any()         : 1つでも1があればtrue
-  .none()        : 全て0ならtrue
-  .count()       : 1の個数 (popcount)
-
- [変換・演算]
-  .to_ullong()   : unsigned long long 型数値へ変換
-  .to_string()   : "0101..." 文字列へ変換
-  (演算子)       : &, |, ^, ~, <<, >> がそのまま使える
-  💡 メリット    : ループで1つずつ判定する処理が、ビット演算により
-                   定数倍で約 64倍 高速化される (O(N / 64) のようなイメージ)
-
+  bitset<N> b    : すべて0で初期化 (※Nは定数) | 例: bitset<2005> b;
+  bitset<N> b(val): 整数から下位ビットを初期化 | 例: bitset<8> b(13); // "00001101"
+  bitset<N> b(str): "0" と "1" の文字列から初期化 (右端が0ビット目) | 例: bitset<4> b("1010");
+  .set(i)        : iビット目を1にする (引数なしで 全1) | 例: b.set(3);
+  .reset(i)      : iビット目を0にする (引数なしで 全0) | 例: b.reset(3);
+  .flip(i)       : iビット目を反転    (引数なしで 全反転) | 例: b.flip(3);
+  .test(i)       : iビット目が1か判定 (b[i]と同じだが範囲外アクセス時に例外で安全) | 例: if (b.test(3))
+  .all()         : 全て1ならtrue | 例: if (b.all())
+  .any()         : 1つでも1があればtrue | 例: if (b.any())
+  .none()        : 全て0ならtrue | 例: if (b.none())
+  .count()       : 1の個数 (popcountをCPU高速命令で処理) | 例: int cnt = b.count();
+  .to_ullong()   : unsigned long long 型数値へ変換 | 例: ull val = b.to_ullong();
+  .to_string()   : "0101..." 文字列へ変換 | 例: string s = b.to_string();
+  &, |, ^, ~, << : 論理演算やシフト演算がそのまま高速動作 | 例: b |= (b << weight); // ナップサック等で約64倍高速化
+  popcount(x)    : O(1) 【C++20〜】立っているビット数(1の数)を高速カウント | 例: int cnt = popcount(x);
+  countr_zero(x) : O(1) 【C++20〜】右端(下位)から連続する0の数をカウント | 例: int trail = countr_zero(x);
+  bit_width(x)   : O(1) 【C++20〜】値を表すのに必要な最小ビット幅を返す (MSB位置特定用) | 例: int w = bit_width(x);
+  has_single_bit(x): O(1) 【C++20〜】値が2のべき乗(1, 2, 4, 8...)であるかを判定 | 例: if (has_single_bit(x))
 
 [5] pair / tuple (組)
 ------------------------------------------------------------------------------
-  .first / .second : pairの要素アクセス
-  get<N>(t)        : tupleのN番目にアクセス
-  auto [a, b] = p  : C++17 構造化束縛 (分解代入)
-  tie(a, b) = p    : 構造化束縛前の古い書き方(古い環境や特定用途で現役)
-  (比較演算子)     : pair/tupleは辞書順比較が定義済み (ソート時に便利)
+  .first / .second : pairの要素アクセス | 例: p.first = 10; p.second = "hello";
+  get<N>(t)        : tupleのN番目にアクセス | 例: int x = get<0>(t);
+  auto [a, b] = p  : C++17 構造化束縛 (分解代入。可読性向上・バグ防止) | 例: auto [cost, to] = edge;
+  tie(a, b) = p    : 構造化束縛前の古い書き方(既存の変数に代入したい時現役) | 例: tie(x, s) = p;
+  比較演算子       : pair/tupleは辞書順比較が自動定義済み (ソートで便利) | 例: sort(all(points));
 
 [6] iterator操作 (非メンバ関数)
 ------------------------------------------------------------------------------
-  distance(it1, it2) : it1からit2までの距離を返す
-  advance(it, n)     : itをn個進める (※set/map等はO(n), vector等はO(1))
-  prev(it)           : 1つ前のイテレータ (※it != begin であること)
-  next(it)           : 1つ後のイテレータ
-  rbegin() / rend()  : 逆順ループ用イテレータ (例: for(auto it = v.rbegin(); it != v.rend(); ++it))
+  distance(it1, it2) : it1からit2までの距離を返す (※vector等はO(1), set等はO(N)) | 例: int idx = distance(v.begin(), it);
+  advance(it, n)     : itをn個進める (※vector等はO(1), set等はO(n)) | 例: advance(it, 3);
+  prev(it)           : 1つ前のイテレータ (※it != begin 用) | 例: auto prev_it = prev(it);
+  next(it)           : 1つ後のイテレータ | 例: auto next_it = next(it);
+  rbegin() / rend()  : 逆順ループ用イテレータ | 例: for(auto it = v.rbegin(); it != v.rend(); ++it)
 
 [7] algorithm / numeric (標準アルゴリズム)
 ------------------------------------------------------------------------------
-  sort(all(v))           : O(N log N) 昇順ソート
-  reverse(all(v))        : O(N) 反転
-  unique(all(v))         : 重複削除(ソート後に使用)。末尾イテレータを返す
-  lower_bound(all(v), x) : x以上の最初の要素のイテレータ
-  upper_bound(all(v), x) : xより大きい最初の要素のイテレータ
-  count(all(v), x)       : O(N) 値がxである要素の個数
-  next_permutation(all(v)): 次の順列を生成(あればtrue)。do { ... } while (next_permutation(all(v))) で全順列を列挙可能（※要ソート）
-  min_element(all(v))    : 最小値を指すイテレータ
-  max_element(all(v))    : 最大値を指すイテレータ
-  minmax(a, b)           : {最小, 最大}のpairを返す
-  clamp(v, lo, hi)       : vを[lo, hi]の範囲に収める (C++17)
-  iota(all(v), x)        : x, x+1, x+2... のように連番で埋める
-  accumulate(all(v), 0LL): 合計値 (初期値 0LL を指定してオーバーフロー防止)
-  partial_sum(all(v), ...) : 累積和を計算して別コンテナに出力
-  is_sorted(all(v))      : ソートされているか判定
-  shuffle(all(v), engine): O(N) ランダムシャッフル (要: <random>ヘッダ)
-  gcd(a, b) / lcm(a, b)  : 最大公約数 / 最小公倍数 (C++17以上)
+  ranges::sort(v)        : O(N log N) 【C++20〜】begin/end不要で昇順ソート | 例: ranges::sort(v);
+  ranges::sort(v, proj)  : 【C++20〜】構造体の特定メンバ変数などをキーとしてソート | 例: ranges::sort(members, {}, &Member::score);
+  sort(all(v))           : 従来の昇順ソート (C++17以前) | 例: sort(all(v));
+  reverse(all(v))        : O(N) メモリ上の物理的配列反転 | 例: reverse(all(v));
+  unique(all(v))         : 重複削除(ソート後に使用)。末尾イテレータを返す (座標圧縮の基本) | 例: v.erase(unique(all(v)), v.end());
+  lower_bound(all(v), x) : x以上の最初の要素のイテレータ | 例: auto it = lower_bound(all(v), x);
+  ranges::lower_bound(v) : 【C++20〜】二分探索 (プロジェクション使用可能) | 例: auto it = ranges::lower_bound(members, 80, {}, &Member::score);
+  upper_bound(all(v), x) : xより大きい最初の要素のイテレータ | 例: auto it = upper_bound(all(v), x);
+  ranges::contains(v, x) : O(N) 【C++23〜】値xが含まれるかをboolで返す | 例: if (ranges::contains(v, 7))
+  count(all(v), x)       : O(N) 値がxである要素の個数 | 例: int cnt = count(all(v), 7);
+  ranges::count(v, x)    : O(N) 【C++20〜】同上 | 例: int cnt = ranges::count(v, 7);
+  ranges::max/min(v)     : O(N) 【C++20〜】最大値/最小値を直接返す (※空配列エラー) | 例: int mx = ranges::max(v);
+  midpoint(ok, ng)       : O(1) 【C++20〜】足し算オーバーフローなしの安全中間値 (二分探索用) | 例: int mid = midpoint(ok, ng);
+  next_permutation(all(v)): 次の順列を生成(あればtrue)。全順列探索に便利 | 例: do { ... } while (next_permutation(all(v)));
+  min_element(all(v))    : 最小値を指すイテレータ | 例: auto it = min_element(all(v));
+  max_element(all(v))    : 最大値を指すイテレータ | 例: auto it = max_element(all(v));
+  minmax(a, b)           : {最小, 最大}のpairを返す | 例: auto [mn, mx] = minmax(a, b);
+  clamp(v, lo, hi)       : vを[lo, hi]の範囲に収める (境界チェック省略用) | 例: int x = clamp(val, 0, W - 1);
+  iota(all(v), x)        : x, x+1, x+2... のように連番で埋める | 例: iota(all(v), 0);
+  accumulate(all(v), 0LL): 合計値 (※0LLを指定してオーバーフロー回避する) | 例: ll sum = accumulate(all(v), 0LL);
+  partial_sum(all(v), it) : 累積和を計算して別コンテナに出力 | 例: partial_sum(all(v), s.begin() + 1);
+  is_sorted(all(v))      : ソートされているか判定 | 例: if (is_sorted(all(v)))
+  shuffle(all(v), engine) : O(N) ランダムシャッフル | 例: shuffle(all(v), engine);
+  gcd(a, b) / lcm(a, b)  : 最大公約数 / 最小公倍数 (C++17以上) | 例: ll g = gcd(a, b);
 
 [8] テンプレート独自の便利機能・数学ライブラリ
 ------------------------------------------------------------------------------
- 💡 便利関数 (値の更新)
-  chmax(a, b)    : a < b なら a = b とし true を返す。例: chmax(ans, x);
-  chmin(a, b)    : a > b なら a = b とし true を返す。例: chmin(ans, x);
+  chmax(a, b)    : a < b なら a = b とし true を返す (DP等で多用) | 例: chmax(ans, x);
+  chmin(a, b)    : a > b なら a = b とし true を返す (DP等で多用) | 例: chmin(ans, x);
+  in_grid(r,c,h,w): O(1) グリッドの範囲内判定 (r, c が 0〜h-1, 0〜w-1 の間か) | 例: if (in_grid(nr, nc, H, W))
+  debug(x)       : 変数名と値を表示 (多次元配列・コンテナ・pair自動展開) | 例: debug(dp);
+  pow_mod(a, n)  : a の n 乗を MOD で割った余りを計算 (O(log n)、負の数対応) | 例: ll val = pow_mod(a, n);
+  inv_mod(a)     : a の MOD における逆元を計算 (※MODが素数の時のみ) | 例: ll inv = inv_mod(a);
+  Combination c(N): nCr を O(1) で求めるクラス (MOD変更バグ防止テンプレート引数) | 例: Combination comb(200005); ll ans = comb.nCr(n, r);
 
- 💡 デバッグ
-  debug(x)       : 変数名と値を表示。例: debug(ans); (※-DLOCAL環境のみ有効)
-
- 💡 数学・アルゴリズム
-  pow_mod(a, n)  : a の n 乗を MOD で割った余りを計算 (O(log n))
-  inv_mod(a)     : a の MOD における逆元 (割り算の代わり) を計算
-  Combination c(N): nCr を O(1) で求めるクラス。例: Combination comb(100005); comb.nCr(n, r);
+[9] C++20/23 モダンレンジ・ビュー操作 (std::views / std::ranges) (※C++23機能は動作環境に注意)
+------------------------------------------------------------------------------
+  ※ std::views:: は namespace エイリアスにより省略可能 (例: views::filter -> filter)
+  v | filter(pred)       : 条件に合うものだけ抽出 (遅延評価・メモリコピーなし) | 例: auto evens = v | filter([](int x){ return x % 2 == 0; });
+  v | take(K)            : 先頭K個だけ取得 | 例: auto head = v | take(5);
+  v | drop(K)            : 先頭K個を無視 | 例: auto tail = v | drop(3);
+  v | transform(f)       : 全要素を一斉に加工 | 例: auto doubled = v | transform([](int x){ return x * 2; });
+  v | reverse            : 逆順に読み込む | 例: for (int x : v | reverse)
+  zip(v1, v2)            : 【C++23】複数配列の同時ループ (添字バグを防止) | 例: for (auto [x, y] : zip(A, B))
+  v | enumerate          : 【C++23】インデックス付きループ (0始まり) | 例: for (auto [i, val] : v | enumerate)
+  v | keys / v | values  : pairの左(key)/右(val)だけ抽出 | 例: for (auto name : mp | keys)
+  cartesian_product(r1,r2):【C++23】直積（多重ループ）の平坦化 (グリッド走査など) | 例: for (auto [r, c] : cartesian_product(iota(0,H), iota(0,W)))
+  v | chunk(K)           : 【C++23】K個ずつの組に分割 | 例: for (auto sub : v | chunk(3))
+  v | slide(K)           : 【C++23】K個の連続区間をずらす (スライド窓) | 例: for (auto window : v | slide(3))
+  v | chunk_by(pred)     : 【C++23】隣接要素が条件を満たす間グループ化 (ランレングス等) | 例: auto groups = v | chunk_by(equal_to{});
+  v | ranges::to<vector>():【C++23】Viewから vector 等のコンテナへ変換 (実体化) | 例: vector<int> res = v | filter(pred) | ranges::to<vector>();
+  ⚠️ 遅延評価の注意点    : views はアクセス毎に再計算するため、[i]でのアクセスや使い回しをする時は必ず `| ranges::to<vector>()` する。
 
 ==============================================================================
 
