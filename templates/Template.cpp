@@ -1,38 +1,26 @@
 #include <bits/stdc++.h>
 using namespace std;
-using namespace std::views; // C++20: views:: を省略可能に
-
-// --- AtCoder Library (ACL) ※使用時はコメントアウトを解除 ---
-// #include <atcoder/all>
-// using namespace atcoder;
-// using mint = modint998244353;
-
-/**
- * @brief 競技プログラミング用テンプレート (最強チートシート版)
- * 
- * 頻出の型、マクロ、関数、入出力高速化、デバッグ用ツールを網羅。
- * C++20 推奨。
- */
+using namespace std::views;
 
 // --- 型エイリアス ---
-using ll = long long;         // 64bit整数 (例: ll a = 1e12;)
+using ll = long long;           // 64bit整数 (例: ll a = 1e12;)
 using ull = unsigned long long;
-using ld = long double;       // 高精度浮動小数点
-using vi = vector<int>;       // 1次元配列 (例: vi v(n);)
+using ld = long double;         // 高精度浮動小数点
+using vi = vector<int>;         // 1次元配列 (例: vi v(n);)
 using vl = vector<ll>;
-using vvi = vector<vi>;       // 2次元配列 (例: vvi g(n, vi(m));)
+using vvi = vector<vi>;         // 2次元配列 (例: vvi g(n, vi(m));)
 using vvl = vector<vl>;
-using pii = pair<int, int>;   // 2つの値の組 (例: pii p = {1, 2};)
+using pii = pair<int, int>;     // 2つの値の組 (例: pii p = {1, 2};)
 using pll = pair<ll, ll>;
-using vpii = vector<pii>;     // pairの配列
+using vpii = vector<pii>;       // pairの配列
 using vpll = vector<pll>;
 
 // --- 定数 ---
 const ll INF = 1e18;
 const int INF_INT = 1e9;
-const int MOD = 998244353; // AtCoderで主流のMOD
+const int MOD = 998244353;
 const int MOD_OLD = 1e9 + 7;
-const double PI = std::numbers::pi; // C++20: 高精度な円周率定数
+const double PI = std::numbers::pi;
 
 /* 
  * 方向配列: グリッド探索などで隣接マスを走査する際に使用
@@ -43,15 +31,15 @@ const int dx8[] = {0, 1, 0, -1, 1, 1, -1, -1}; // 8方向 (4方向 + 斜め)
 const int dy8[] = {1, 0, -1, 0, 1, -1, 1, -1};
 
 // --- 便利マクロ ---
-#define rep(i, n) for (int i = 0; i < (int)(n); ++i)        // 0からn-1まで (例: rep(i, n) cin >> v[i];)
+#define rep(i, n) for (int i = 0; i < (int)(n); ++i)            // 0からn-1まで (例: rep(i, n) cin >> v[i];)
 #define reps(i, s, n) for (int i = (int)(s); i < (int)(n); ++i) // sからn-1まで
-#define rrep(i, n) for (int i = (int)(n) - 1; i >= 0; --i)   // n-1から0まで逆順
-#define all(v) (v).begin(), (v).end()                        // 全範囲 (例: sort(all(v));)
-#define rall(v) (v).rbegin(), (v).rend()                     // 逆順全範囲
-#define pb push_back                                         // 末尾追加 (例: v.pb(x);)
-#define eb emplace_back                                      // 高速末尾追加
-#define fi first                                             // pairの第1要素
-#define se second                                            // pairの第2要素
+#define rrep(i, n) for (int i = (int)(n) - 1; i >= 0; --i)      // n-1から0まで逆順
+#define all(v) (v).begin(), (v).end()                           // 全範囲 (例: sort(all(v));)
+#define rall(v) (v).rbegin(), (v).rend()                        // 逆順全範囲
+#define pb push_back                                            // 末尾追加 (例: v.pb(x);)
+#define eb emplace_back                                         // 高速末尾追加
+#define fi first                                                // pairの第1要素
+#define se second                                               // pairの第2要素
 
 // --- 入出力高速化 ---
 struct FastIO {
