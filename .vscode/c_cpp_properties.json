@@ -1,14 +1,12 @@
 {
     "configurations": [
         {
-            "name": "WSL-Ubuntu",
+            "name": "Linux-GCC",
             "includePath": [
                 "${workspaceFolder}/**"
             ],
             "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE"
+                "LOCAL"
             ],
             "compilerPath": "/usr/bin/g++",
             "cStandard": "c17",

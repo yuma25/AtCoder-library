@@ -1,0 +1,277 @@
+{
+  "Competitive Programming Template Python Complete": {
+    "prefix": "pycp",
+    "body": [
+      "import sys",
+      "import math",
+      "import bisect",
+      "import itertools",
+      "import collections",
+      "import heapq",
+      "",
+      "sys.setrecursionlimit(10**7)",
+      "INF = 10**18",
+      "MOD = 998244353",
+      "MOD_OLD = 10**9 + 7",
+      "dx4 = [0, 1, 0, -1]",
+      "dy4 = [1, 0, -1, 0]",
+      "dx8 = [0, 1, 0, -1, 1, 1, -1, -1]",
+      "dy8 = [1, 0, -1, 0, 1, -1, 1, -1]",
+      "",
+      "input = lambda: sys.stdin.readline().rstrip()",
+      "I = lambda: int(input())",
+      "MI = lambda: map(int, input().split())",
+      "LI = lambda: list(map(int, input().split()))",
+      "",
+      "def main():",
+      "    $0",
+      "    pass",
+      "",
+      "if __name__ == '__main__':",
+      "    main()"
+    ],
+    "description": "AtCoder Python Template"
+  },
+  "Input Single Int": {
+    "prefix": "inp_i",
+    "body": [
+      "${1:N} = int(input())"
+    ],
+    "description": "Read single integer"
+  },
+  "Input Multiple Ints": {
+    "prefix": "inp_mi",
+    "body": [
+      "${1:N}, ${2:M} = map(int, input().split())"
+    ],
+    "description": "Read multiple space-separated integers"
+  },
+  "Input List of Ints": {
+    "prefix": "inp_li",
+    "body": [
+      "${1:A} = list(map(int, input().split()))"
+    ],
+    "description": "Read line into list of integers"
+  },
+  "Input Column Ints (N lines)": {
+    "prefix": "inp_col",
+    "body": [
+      "${1:A} = [int(input()) for _ in range(${2:N})]"
+    ],
+    "description": "Read N single integers into a list"
+  },
+  "Input Grid Strings": {
+    "prefix": "inp_grid",
+    "body": [
+      "${1:grid} = [input() for _ in range(${2:H})]"
+    ],
+    "description": "Read H lines of string grid"
+  },
+  "Input Graph Adjacency List": {
+    "prefix": "inp_graph",
+    "body": [
+      "${1:G} = [[] for _ in range(${2:N})]",
+      "for _ in range(${3:M}):",
+      "    u, v = map(int, input().split())",
+      "    u -= 1; v -= 1",
+      "    ${1:G}[u].append(v)",
+      "    ${1:G}[v].append(u)"
+    ],
+    "description": "Read M edges for undirected graph (0-indexed)"
+  },
+  "List 1D": {
+    "prefix": "l1",
+    "body": [
+      "${1:dp} = [${2:0}] * (${3:N})"
+    ],
+    "description": "1D List initialization"
+  },
+  "List 2D": {
+    "prefix": "l2",
+    "body": [
+      "${1:dp} = [[${2:0}] * (${3:W}) for _ in range(${4:H})]"
+    ],
+    "description": "2D List initialization"
+  },
+  "Deque initialization": {
+    "prefix": "deque_init",
+    "body": [
+      "${1:que} = collections.deque()"
+    ],
+    "description": "Initialize collections.deque"
+  },
+  "Binary Search (Decision Problem)": {
+    "prefix": "binsearch",
+    "body": [
+      "def check(x):",
+      "    # ${1:判定ロジック}",
+      "    return True",
+      "",
+      "ok = ${2:0}",
+      "ng = ${3:10**18}",
+      "while abs(ok - ng) > 1:",
+      "    mid = (ok + ng) // 2",
+      "    if check(mid):",
+      "        ok = mid",
+      "    else:",
+      "        ng = mid"
+    ],
+    "description": "Binary search template for decision problems"
+  },
+  "BFS Graph Shortest Path": {
+    "prefix": "bfs",
+    "body": [
+      "dist = [-1] * (${1:N})",
+      "que = collections.deque([${2:0}])",
+      "dist[${2:0}] = 0",
+      "while que:",
+      "    v = que.popleft()",
+      "    for nv in ${3:G}[v]:",
+      "        if dist[nv] != -1:",
+      "            continue",
+      "        dist[nv] = dist[v] + 1",
+      "        que.append(nv)"
+    ],
+    "description": "BFS shortest path on graph"
+  },
+  "BFS Grid Shortest Path": {
+    "prefix": "gridbfs",
+    "body": [
+      "dist = [[-1] * (${2:W}) for _ in range(${1:H})]",
+      "que = collections.deque([(${3:sy}, ${4:sx})])",
+      "dist[${3:sy}][${4:sx}] = 0",
+      "while que:",
+      "    r, c = que.popleft()",
+      "    for dr, dc in ((0, 1), (1, 0), (0, -1), (-1, 0)):",
+      "        nr, nc = r + dr, c + dc",
+      "        if not (0 <= nr < ${1:H} and 0 <= nc < ${2:W}):",
+      "            continue",
+      "        if ${5:grid}[nr][nc] == '#':",
+      "            continue",
+      "        if dist[nr][nc] != -1:",
+      "            continue",
+      "        dist[nr][nc] = dist[r][c] + 1",
+      "        que.append((nr, nc))"
+    ],
+    "description": "BFS shortest path on 2D grid"
+  },
+  "Dijkstra Algorithm": {
+    "prefix": "dijkstra",
+    "body": [
+      "dist = [float('inf')] * (${1:N})",
+      "dist[${2:0}] = 0",
+      "hq = [(0, ${2:0})]",
+      "while hq:",
+      "    d, v = heapq.heappop(hq)",
+      "    if dist[v] < d:",
+      "        continue",
+      "    for to, cost in ${3:G}[v]:",
+      "        if dist[to] > dist[v] + cost:",
+      "            dist[to] = dist[v] + cost",
+      "            heapq.heappush(hq, (dist[to], to))"
+    ],
+    "description": "Dijkstra algorithm for shortest path"
+  },
+  "Union-Find (Disjoint Set Union)": {
+    "prefix": "unionfind",
+    "body": [
+      "class UnionFind:",
+      "    def __init__(self, n):",
+      "        self.parent = list(range(n))",
+      "        self.size = [1] * n",
+      "",
+      "    def leader(self, x):",
+      "        if self.parent[x] == x:",
+      "            return x",
+      "        self.parent[x] = self.leader(self.parent[x])",
+      "        return self.parent[x]",
+      "",
+      "    def merge(self, x, y):",
+      "        root_x, root_y = self.leader(x), self.leader(y)",
+      "        if root_x == root_y:",
+      "            return False",
+      "        if self.size[root_x] < self.size[root_y]:",
+      "            root_x, root_y = root_y, root_x",
+      "        self.parent[root_y] = root_x",
+      "        self.size[root_x] += self.size[root_y]",
+      "        return True",
+      "",
+      "    def same(self, x, y):",
+      "        return self.leader(x) == self.leader(y)"
+    ],
+    "description": "Union-Find (DSU) class"
+  },
+  "Coordinate Compression": {
+    "prefix": "compression",
+    "body": [
+      "vals = sorted(set(${1:A}))",
+      "comp = {v: i for i, v in enumerate(vals)}"
+    ],
+    "description": "Coordinate compression dictionary"
+  },
+  "Run Length Encoding": {
+    "prefix": "rle",
+    "body": [
+      "rle = [(k, len(list(g))) for k, g in itertools.groupby(${1:S})]"
+    ],
+    "description": "Run length encoding using itertools.groupby"
+  },
+  "Prime Factorization": {
+    "prefix": "primefactor",
+    "body": [
+      "def prime_factorize(n):",
+      "    res = []",
+      "    p = 2",
+      "    while p * p <= n:",
+      "        if n % p == 0:",
+      "            cnt = 0",
+      "            while n % p == 0:",
+      "                cnt += 1",
+      "                n //= p",
+      "            res.append((p, cnt))",
+      "        p += 1",
+      "    if n > 1:",
+      "        res.append((n, 1))",
+      "    return res"
+    ],
+    "description": "Prime factorization function"
+  },
+  "Divisors Enumeration": {
+    "prefix": "divisors",
+    "body": [
+      "def get_divisors(n):",
+      "    res = []",
+      "    i = 1",
+      "    while i * i <= n:",
+      "        if n % i == 0:",
+      "            res.append(i)",
+      "            if i * i != n:",
+      "                res.append(n // i)",
+      "        i += 1",
+      "    res.sort()",
+      "    return res"
+    ],
+    "description": "Divisors enumeration function"
+  },
+  "Combination Table": {
+    "prefix": "combination",
+    "body": [
+      "class Combination:",
+      "    def __init__(self, n, mod=998244353):",
+      "        self.mod = mod",
+      "        self.fact = [1] * (n + 1)",
+      "        self.inv = [1] * (n + 1)",
+      "        for i in range(1, n + 1):",
+      "            self.fact[i] = (self.fact[i - 1] * i) % mod",
+      "        self.inv[n] = pow(self.fact[n], mod - 2, mod)",
+      "        for i in range(n - 1, -1, -1):",
+      "            self.inv[i] = (self.inv[i + 1] * (i + 1)) % mod",
+      "",
+      "    def nCr(self, n, r):",
+      "        if r < 0 or n < r:",
+      "            return 0",
+      "        return self.fact[n] * self.inv[r] % self.mod * self.inv[n - r] % self.mod"
+    ],
+    "description": "Combination (nCr) class with precomputed factorials"
+  }
+}

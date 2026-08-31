@@ -5,7 +5,6 @@
       "#include <bits/stdc++.h>",
       "using namespace std;",
       "",
-      "// --- 型エイリアス ---",
       "using ll = long long;",
       "using ull = unsigned long long;",
       "using ld = long double;",
@@ -18,7 +17,6 @@
       "using vpii = vector<pii>;",
       "using vpll = vector<pll>;",
       "",
-      "// --- 定数 ---",
       "const ll INF = 1e18;",
       "const int INF_INT = 1e9;",
       "const int MOD = 998244353;",
@@ -30,7 +28,6 @@
       "const int dx8[] = {0, 1, 0, -1, 1, 1, -1, -1};",
       "const int dy8[] = {1, 0, -1, 0, 1, -1, 1, -1};",
       "",
-      "// --- 便利マクロ ---",
       "#define rep(i, n) for (int i = 0; i < (int)(n); ++i)",
       "#define reps(i, s, n) for (int i = (int)(s); i < (int)(n); ++i)",
       "#define rrep(i, n) for (int i = (int)(n) - 1; i >= 0; --i)",
@@ -41,7 +38,6 @@
       "#define fi first",
       "#define se second",
       "",
-      "// --- 入出力高速化 ---",
       "struct FastIO {",
       "    FastIO() {",
       "        ios::sync_with_stdio(false);",
@@ -50,61 +46,85 @@
       "    }",
       "} fast_io;",
       "",
-      "// --- 便利関数 ---",
       "template<typename T> inline bool chmax(T &a, T b) { if (a < b) { a = b; return true; } return false; }",
       "template<typename T> inline bool chmin(T &a, T b) { if (a > b) { a = b; return true; } return false; }",
       "inline bool in_grid(int r, int c, int h, int w) { return 0 <= r && r < h && 0 <= c && c < w; }",
       "",
-      "// --- 数学・アルゴリズム集 ---",
-      "ll pow_mod(ll a, ll n, ll m = MOD) {",
-      "    ll res = 1;",
-      "    a = (a % m + m) % m;",
-      "    while (n > 0) {",
-      "        if (n & 1) res = res * a % m;",
-      "        a = a * a % m;",
-      "        n >>= 1;",
-      "    }",
-      "    return res;",
-      "}",
-      "",
-      "ll inv_mod(ll a, ll m = MOD) {",
-      "    return pow_mod(a, m - 2, m);",
-      "}",
-      "",
-      "template<int m = MOD>",
-      "struct Combination {",
-      "    vl fact, inv;",
-      "    Combination(int n) : fact(n + 1), inv(n + 1) {",
-      "        fact[0] = 1;",
-      "        for (int i = 1; i <= n; i++) fact[i] = fact[i - 1] * i % m;",
-      "        inv[n] = pow_mod(fact[n], m - 2, m);",
-      "        for (int i = n - 1; i >= 0; i--) inv[i] = inv[i + 1] * (i + 1) % m;",
-      "    }",
-      "    ll nCr(int n, int r) {",
-      "        if (r < 0 || r > n) return 0;",
-      "        return fact[n] * inv[r] % m * inv[n - r] % m;",
-      "    }",
-      "};",
-      "",
       "int main() {",
       "    $0",
-      "    ",
       "    return 0;",
       "}"
     ],
     "description": "AtCoder C++ Template Complete"
   },
+  "Input Single Int/LL": {
+    "prefix": "inp_i",
+    "body": [
+      "${1:int} ${2:n};",
+      "cin >> ${2:n};"
+    ],
+    "description": "Read single variable"
+  },
+  "Input Multiple Ints": {
+    "prefix": "inp_mi",
+    "body": [
+      "${1:int} ${2:n}, ${3:m};",
+      "cin >> ${2:n} >> ${3:m};"
+    ],
+    "description": "Read multiple variables"
+  },
+  "Input Vector 1D": {
+    "prefix": "inp_v1",
+    "body": [
+      "vector<${1:int}> ${2:a}(${3:n});",
+      "for (int i = 0; i < (int)(${3:n}); ++i) cin >> ${2:a}[i];"
+    ],
+    "description": "Read 1D vector"
+  },
+  "Input Vector 2D": {
+    "prefix": "inp_v2",
+    "body": [
+      "vector<vector<${1:int}>> ${2:a}(${3:h}, vector<${1:int}>(${4:w}));",
+      "for (int i = 0; i < (int)(${3:h}); ++i) {",
+      "    for (int j = 0; j < (int)(${4:w}); ++j) {",
+      "        cin >> ${2:a}[i][j];",
+      "    }",
+      "}"
+    ],
+    "description": "Read 2D vector"
+  },
+  "Input Grid Strings": {
+    "prefix": "inp_grid",
+    "body": [
+      "vector<string> ${1:grid}(${2:h});",
+      "for (int i = 0; i < (int)(${2:h}); ++i) cin >> ${1:grid}[i];"
+    ],
+    "description": "Read string grid"
+  },
+  "Input Graph Adjacency List": {
+    "prefix": "inp_graph",
+    "body": [
+      "vector<vector<int>> ${1:G}(${2:n});",
+      "for (int i = 0; i < (int)(${3:m}); ++i) {",
+      "    int u, v; cin >> u >> v;",
+      "    --u; --v;",
+      "    ${1:G}[u].push_back(v);",
+      "    ${1:G}[v].push_back(u);",
+      "}"
+    ],
+    "description": "Read undirected graph adjacency list (0-indexed)"
+  },
   "vector 1D": {
     "prefix": "v1",
     "body": [
-      "vector<${1:int}> ${2:v}(${3:N}, ${4:0});"
+      "vector<${1:int}> ${2:v}(${3:n}, ${4:0});"
     ],
     "description": "vector 1D declaration"
   },
   "vector 2D": {
     "prefix": "v2",
     "body": [
-      "vector<vector<${1:int}>> ${2:v}(${3:H}, vector<${1:int}>(${4:W}, ${5:0}));"
+      "vector<vector<${1:int}>> ${2:v}(${3:h}, vector<${1:int}>(${4:w}, ${5:0}));"
     ],
     "description": "vector 2D declaration"
   },
@@ -139,33 +159,30 @@
   "Binary Search (Decision Problem)": {
     "prefix": "binsearch",
     "body": [
-      "auto solve_bin = [&](auto &&self) -> void {",
-      "    auto check = [&](long long x) -> bool {",
-      "        // 判定条件を記述",
-      "        return true;",
-      "    };",
-      "    long long ok = ${1:-1}; // 条件を満たす側",
-      "    long long ng = ${2:INF}; // 条件を満たさない側",
-      "    while (abs(ok - ng) > 1) {",
-      "        long long mid = ok + (ng - ok) / 2;",
-      "        if (check(mid)) ok = mid;",
-      "        else ng = mid;",
-      "    }",
-      "    // ok が求める答えとなる",
-      "};"
+      "auto check = [&](long long x) -> bool {",
+      "    // ${1:判定ロジック}",
+      "    return true;",
+      "};",
+      "long long ok = ${2:0};",
+      "long long ng = ${3:1e18};",
+      "while (abs(ok - ng) > 1) {",
+      "    long long mid = ok + (ng - ok) / 2;",
+      "    if (check(mid)) ok = mid;",
+      "    else ng = mid;",
+      "}"
     ],
     "description": "Binary Search template for decision problems"
   },
   "BFS Graph Shortest Path": {
     "prefix": "bfs",
     "body": [
-      "vector<int> dist(${1:N}, -1);",
+      "vector<int> dist(${1:n}, -1);",
       "queue<int> que;",
-      "dist[${2:start}] = 0;",
-      "que.push(${2:start});",
+      "dist[${2:0}] = 0;",
+      "que.push(${2:0});",
       "while (!que.empty()) {",
       "    int v = que.front(); que.pop();",
-      "    for (int nv : ${3:graph}[v]) {",
+      "    for (int nv : ${3:G}[v]) {",
       "        if (dist[nv] != -1) continue;",
       "        dist[nv] = dist[v] + 1;",
       "        que.push(nv);",
@@ -177,7 +194,7 @@
   "BFS Grid Shortest Path": {
     "prefix": "gridbfs",
     "body": [
-      "vector<vector<int>> dist(${1:H}, vector<int>(${2:W}, -1));",
+      "vector<vector<int>> dist(${1:h}, vector<int>(${2:w}, -1));",
       "queue<pair<int, int>> que;",
       "dist[${3:sy}][${4:sx}] = 0;",
       "que.push({${3:sy}, ${4:sx}});",
@@ -186,8 +203,8 @@
       "    for (int i = 0; i < 4; ++i) {",
       "        int nr = r + dx4[i];",
       "        int nc = c + dy4[i];",
-      "        if (!in_grid(nr, nc, ${1:H}, ${2:W})) continue;",
-      "        if (${5:grid}[nr][nc] == '#') continue; // 壁の判定",
+      "        if (!in_grid(nr, nc, ${1:h}, ${2:w})) continue;",
+      "        if (${5:grid}[nr][nc] == '#') continue;",
       "        if (dist[nr][nc] != -1) continue;",
       "        dist[nr][nc] = dist[r][c] + 1;",
       "        que.push({nr, nc});",
@@ -203,14 +220,14 @@
       "    int to;",
       "    long long cost;",
       "};",
-      "vector<long long> dist(${1:N}, INF);",
+      "vector<long long> dist(${1:n}, INF);",
       "priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pq;",
-      "dist[${2:start}] = 0;",
-      "pq.push({0, ${2:start}});",
+      "dist[${2:0}] = 0;",
+      "pq.push({0, ${2:0}});",
       "while (!pq.empty()) {",
       "    auto [d, v] = pq.top(); pq.pop();",
       "    if (dist[v] < d) continue;",
-      "    for (const auto& e : ${3:graph}[v]) {",
+      "    for (const auto& e : ${3:G}[v]) {",
       "        if (chmin(dist[e.to], dist[v] + e.cost)) {",
       "            pq.push({dist[e.to], e.to});",
       "        }",
@@ -218,6 +235,30 @@
       "}"
     ],
     "description": "Dijkstra algorithm for shortest path"
+  },
+  "Union-Find (Disjoint Set Union)": {
+    "prefix": "unionfind",
+    "body": [
+      "struct UnionFind {",
+      "    vector<int> par, siz;",
+      "    UnionFind(int n) : par(n, -1), siz(n, 1) {}",
+      "    int root(int x) {",
+      "        if (par[x] == -1) return x;",
+      "        return par[x] = root(par[x]);",
+      "    }",
+      "    bool same(int x, int y) { return root(x) == root(y); }",
+      "    bool unite(int x, int y) {",
+      "        x = root(x); y = root(y);",
+      "        if (x == y) return false;",
+      "        if (siz[x] < siz[y]) swap(x, y);",
+      "        par[y] = x;",
+      "        siz[x] += siz[y];",
+      "        return true;",
+      "    }",
+      "    int size(int x) { return siz[root(x)]; }",
+      "};"
+    ],
+    "description": "Union-Find (DSU) struct"
   },
   "Coordinate Compression": {
     "prefix": "compression",
@@ -230,7 +271,7 @@
       "    for (int i = 0; i < (int)A.size(); ++i) {",
       "        res[i] = lower_bound(vals.begin(), vals.end(), A[i]) - vals.begin();",
       "    }",
-      "    return make_pair(res, vals); // 圧縮後の配列，元の値のリスト",
+      "    return make_pair(res, vals);",
       "};"
     ],
     "description": "Coordinate compression"
@@ -291,12 +332,40 @@
     ],
     "description": "Divisors enumeration"
   },
+  "Combination Struct": {
+    "prefix": "combination",
+    "body": [
+      "struct Combination {",
+      "    vector<long long> fact, inv;",
+      "    long long mod;",
+      "    Combination(int n, long long m = 998244353) : fact(n + 1), inv(n + 1), mod(m) {",
+      "        fact[0] = 1;",
+      "        for (int i = 1; i <= n; i++) fact[i] = fact[i - 1] * i % mod;",
+      "        inv[n] = mod_pow(fact[n], mod - 2);",
+      "        for (int i = n - 1; i >= 0; i--) inv[i] = inv[i + 1] * (i + 1) % mod;",
+      "    }",
+      "    long long mod_pow(long long a, long long n) {",
+      "        long long res = 1; a %= mod;",
+      "        while (n > 0) {",
+      "            if (n & 1) res = res * a % mod;",
+      "            a = a * a % mod; n >>= 1;",
+      "        }",
+      "        return res;",
+      "    }",
+      "    long long nCr(int n, int r) {",
+      "        if (r < 0 || r > n) return 0;",
+      "        return fact[n] * inv[r] % mod * inv[n - r] % mod;",
+      "    }",
+      "};"
+    ],
+    "description": "Combination (nCr) struct with precomputation"
+  },
   "ACL Segment Tree (Max)": {
     "prefix": "segtree_max",
     "body": [
       "int op(int a, int b) { return max(a, b); }",
-      "int e() { return -INF_INT; }",
-      "// segtree<int, op, e> seg(${1:N});"
+      "int e() { return -1e9; }",
+      "// atcoder::segtree<int, op, e> seg(${1:n});"
     ],
     "description": "ACL Segment Tree for range max query"
   },
@@ -304,11 +373,11 @@
     "prefix": "lazy_segtree_add_min",
     "body": [
       "int op(int a, int b) { return min(a, b); }",
-      "int e() { return INF_INT; }",
+      "int e() { return 1e9; }",
       "int mapping(int f, int x) { return x + f; }",
       "int composition(int f, int g) { return f + g; }",
       "int id() { return 0; }",
-      "// lazy_segtree<int, op, e, int, mapping, composition, id> seg(${1:N});"
+      "// atcoder::lazy_segtree<int, op, e, int, mapping, composition, id> seg(${1:n});"
     ],
     "description": "ACL Lazy Segment Tree for range add and range min query"
   }
